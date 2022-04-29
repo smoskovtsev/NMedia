@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/barrier"
         app:layout_constraintStart_toStartOf="parent"
-        tools:srcCompat="@sample/posts.json/data/authorAvatar" />
+        app:srcCompat="@drawable/ic_post_avatar_48" />
 
     <TextView
         android:id="@+id/author"
