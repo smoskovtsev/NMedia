@@ -2,11 +2,15 @@ package ru.netology.nmedia
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.viewModel.PostViewModel
 
 class MainActivity : AppCompatActivity() {
+
+    private val viewModel by viewModels<PostViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -14,27 +18,16 @@ class MainActivity : AppCompatActivity() {
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val post = Post(
-            id = 1L,
-            author = "Нетология. Университет интернет-профессий будущего",
-            content = "Привет, это новая Нетология! Когда-то Нетология начиналась с интенсивов по онлайн-маркетингу. Затем появились курсы по дизайну, разработке, аналитике и управлению. Мы растём сами и помогаем расти студентам: от новичков до уверенных профессионалов. Но самое важное остаётся с нами: мы верим, что в каждом уже есть сила, которая заставляет хотеть больше, целиться выше, бежать быстрее. Наша миссия — помочь встать на путь роста и начать цепочку перемен → http://netolo.gy/fyb",
-            published = "21 мая в 18:36"
-         )
-
-        binding.render(post)
+        viewModel.data.observe(this) { post ->
+            binding.render(post)
+        }
 
         binding.favorite.setOnClickListener {
-            post.likedByMe = !post.likedByMe
-            if (post.likedByMe) post.likes = post.likes + 1 else post.likes = post.likes - 1
-            binding.favorite.setImageResource(getLikeIconResId(post.likedByMe))
-            binding.likes.text = likesSharesDisplay(post.likes)
+            viewModel.onLikeClicked()
         }
 
         binding.share.setOnClickListener {
-            post.shared = true
-            post.shares = post.shares + 1
-            binding.share.setImageResource(getShareIconResId(post.shared))
-            binding.shares.text = likesSharesDisplay(post.shares)
+            viewModel.onPostShared()
         }
     }
 
