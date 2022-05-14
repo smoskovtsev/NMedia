@@ -35,16 +35,6 @@ class InMemoryPostRepository : PostRepository {
             )
         }
     }
-//        val currentPost =
-//        val likedPost = currentPost.copy(
-//            likedByMe = !currentPost.likedByMe,
-//            likes = when (currentPost.likedByMe) {
-//                false ->  currentPost.likes + 1
-//                true ->  currentPost.likes - 1
-//            }
-//        )
-//        data.value = likedPost
-//    }
 
     override fun share(postId: Long) {
         data.value = posts.map {
@@ -52,12 +42,6 @@ class InMemoryPostRepository : PostRepository {
             else it.copy(shared = true, shares = it.shares + 1)
         }
     }
-
-//        val sharedPost = currentPost.copy(
-//            shared = true,
-//            shares = currentPost.shares + 1
-//        )
-//        data.value = sharedPost
 
     override fun delete(postId: Long) {
         data.value = posts.filterNot { it.id == postId} //or .filter {it.id != postId}
@@ -79,10 +63,7 @@ class InMemoryPostRepository : PostRepository {
         }
     }
 
-
     private companion object {
         const val GENERATED_POSTS_AMOUNT = 1000
     }
-
-
 }

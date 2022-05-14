@@ -2,6 +2,7 @@ package ru.netology.nmedia
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.ActivityMainBinding
@@ -24,10 +25,21 @@ class MainActivity : AppCompatActivity() {
         viewModel.data.observe(this) { posts ->
             adapter.submitList(posts)
         }
+
+        binding.contentEditText.setOnFocusChangeListener { _, _ ->
+            if (binding.contentEditText.hasFocus()) binding.cancelButton.visibility = View.VISIBLE
+                else binding.cancelButton.visibility = View.GONE
+        }
+
         binding.saveButton.setOnClickListener {
             val content = binding.contentEditText.text.toString()
             viewModel.onSaveButtonClicked(content)
         }
+
+        binding.cancelButton.setOnClickListener {
+            viewModel.onCancelButtonClicked()
+        }
+
         viewModel.currentPost.observe(this) { currentPost ->
             with(binding.contentEditText) {
                 val content = currentPost?.content

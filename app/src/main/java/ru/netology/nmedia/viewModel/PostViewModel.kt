@@ -30,6 +30,14 @@ class PostViewModel : ViewModel(), PostInteractionListener {
         currentPost.value = null
     }
 
+    fun onCancelButtonClicked() {
+        val post = currentPost.value?.copy()
+        if (post != null) {
+            repository.addUpdatePost(post)
+        }
+        currentPost.value = null
+    }
+
     // region PostInteractionListener
 
     override fun onLikeClicked(post: Post) = repository.like(post.id)
