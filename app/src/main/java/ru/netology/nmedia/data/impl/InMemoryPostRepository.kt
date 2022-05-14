@@ -6,8 +6,11 @@ import ru.netology.nmedia.data.PostRepository
 import ru.netology.nmedia.dto.Post
 
 class InMemoryPostRepository : PostRepository {
+
+    private var nextId = GENERATED_POSTS_AMOUNT.toLong()
+
     override val data = MutableLiveData(
-        List(100) { index ->
+        List(GENERATED_POSTS_AMOUNT) { index ->
             Post(
                 id = index + 1L,
                 author = "Нетология. Университет интернет-профессий будущего",
@@ -49,9 +52,37 @@ class InMemoryPostRepository : PostRepository {
             else it.copy(shared = true, shares = it.shares + 1)
         }
     }
+
 //        val sharedPost = currentPost.copy(
 //            shared = true,
 //            shares = currentPost.shares + 1
 //        )
 //        data.value = sharedPost
+
+    override fun delete(postId: Long) {
+        data.value = posts.filterNot { it.id == postId} //or .filter {it.id != postId}
+    }
+
+    override fun addUpdatePost(post: Post) {
+        if (post.id == PostRepository.NEW_POST_ID) insert(post) else update(post)
+    }
+
+    private fun insert(post: Post) {
+        data.value = listOf(
+            post.copy(id = ++nextId)
+        ) + posts
+    }
+
+    private fun update(post: Post) {
+        data.value = posts.map {
+            if (it.id == post.id) post else it
+        }
+    }
+
+
+    private companion object {
+        const val GENERATED_POSTS_AMOUNT = 1000
+    }
+
+
 }
