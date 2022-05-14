@@ -6,4 +6,9 @@
     <string name="description_share" translatable="false">description_share</string>
     <string name="description_visibility" translatable="false">description_visibility</string>
     <string name="nmedia">NMedia!</string>
+    <string name="remove">Remove</string>
+    <string name="post_text">Post Text</string>
+    <string name="menu_edit">Edit</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="save_button">Save</string>
 </resources>
