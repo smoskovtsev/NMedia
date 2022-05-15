@@ -14,7 +14,7 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@id/toolsTopBarrier"
         app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/post" />
+        tools:listitem="@layout/post"/>
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/toolsTopBarrier"

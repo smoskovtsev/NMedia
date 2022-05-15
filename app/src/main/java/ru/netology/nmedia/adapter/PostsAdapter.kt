@@ -49,8 +49,9 @@ internal class PostsAdapter(
         }
 
         init {
-            binding.favorite.setOnClickListener { listener.onLikeClicked(post) }
+            binding.like.setOnClickListener { listener.onLikeClicked(post) }
             binding.share.setOnClickListener { listener.onPostShared(post) }
+            binding.menu.setOnClickListener{popupMenu.show()}
         }
 
         fun bind(post: Post) {
@@ -60,13 +61,11 @@ internal class PostsAdapter(
                 author.text = post.author
                 content.text = post.content
                 published.text = post.published
-                likes.text = likesSharesDisplay(post.likes)
-                shares.text = likesSharesDisplay(post.shares)
-                views.text = likesSharesDisplay(post.views)
-
-                favorite.setImageResource(getLikeIconResId(post.likedByMe))
-                share.setImageResource(getShareIconResId(post.shared))
-                menu.setOnClickListener{popupMenu.show()}
+                like.text = likesSharesDisplay(post.likes)
+                like.isChecked = post.likedByMe
+                share.text = likesSharesDisplay(post.shares)
+                share.isChecked = post.shared
+                visibility.text = likesSharesDisplay(post.views)
             }
         }
 
@@ -81,14 +80,6 @@ internal class PostsAdapter(
                 else -> "${amount/1_000_000}.${(amount % 1_000_000)/100_000}M"
             }
         }
-
-        @DrawableRes
-        private fun getLikeIconResId(liked: Boolean) =
-            if (liked) R.drawable.ic_liked_24 else R.drawable.ic_favorite_border_24
-
-        @DrawableRes
-        private fun getShareIconResId(shared: Boolean) =
-            if (shared) R.drawable.ic_shared_24 else R.drawable.ic_share_24
     }
 
     private object DiffCallback : DiffUtil.ItemCallback<Post>() {
