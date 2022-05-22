@@ -7,4 +7,7 @@
     <string name="menu_edit">Изменить</string>
     <string name="cancel_button">Отменить</string>
     <string name="save_button">Сохранить</string>
+    <string name="chooser_share_post">Поделиться</string>
+    <string name="description_post_save">Создать пост</string>
+    <string name="add_post">Добавить пост</string>
 </resources>

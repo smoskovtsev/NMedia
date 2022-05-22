@@ -6,6 +6,7 @@ import ru.netology.nmedia.adapter.PostInteractionListener
 import ru.netology.nmedia.data.PostRepository
 import ru.netology.nmedia.data.impl.InMemoryPostRepository
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.util.SingleLiveEvent
 
 class PostViewModel : ViewModel(), PostInteractionListener {
 
@@ -13,6 +14,8 @@ class PostViewModel : ViewModel(), PostInteractionListener {
 
     val data get() = repository.data //or val data by repository :: data
 
+    val sharePostContent = SingleLiveEvent<String>()
+    val navigateToPostContentScreenEvent = SingleLiveEvent<Unit>()
     val currentPost = MutableLiveData<Post?>(null)
 
     fun onSaveButtonClicked(content: String) {
@@ -30,24 +33,24 @@ class PostViewModel : ViewModel(), PostInteractionListener {
         currentPost.value = null
     }
 
-    fun onCancelButtonClicked() {
-        val post = currentPost.value?.copy()
-        if (post != null) {
-            repository.addUpdatePost(post)
-        }
-        currentPost.value = null
+    fun onAddClicked() {
+        navigateToPostContentScreenEvent.call()
     }
 
     // region PostInteractionListener
 
     override fun onLikeClicked(post: Post) = repository.like(post.id)
 
-    override fun onPostShared(post: Post) = repository.share(post.id)
+    override fun onPostShared(post: Post) {
+        repository.share(post.id)
+        sharePostContent.value = post.content
+    }
 
     override fun onPostDeleted(post: Post) = repository.delete(post.id)
 
     override fun onPostEdited(post: Post) {
         currentPost.value = post
+        navigateToPostContentScreenEvent.call()
     }
 
     // endregion PostInteractionListener

@@ -1,9 +1,12 @@
 package ru.netology.nmedia
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.launch
 import androidx.activity.viewModels
+import ru.netology.nmedia.activity.PostContentActivity
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.nmedia.util.hideKeyboard
@@ -26,32 +29,31 @@ class MainActivity : AppCompatActivity() {
             adapter.submitList(posts)
         }
 
-        binding.contentEditText.setOnFocusChangeListener { _, _ ->
-            if (binding.contentEditText.hasFocus()) binding.cancelButton.visibility = View.VISIBLE
-                else binding.cancelButton.visibility = View.GONE
+        binding.fab.setOnClickListener {
+            viewModel.onAddClicked()
         }
 
-        binding.saveButton.setOnClickListener {
-            val content = binding.contentEditText.text.toString()
-            viewModel.onSaveButtonClicked(content)
-        }
-
-        binding.cancelButton.setOnClickListener {
-            viewModel.onCancelButtonClicked()
-        }
-
-        viewModel.currentPost.observe(this) { currentPost ->
-            with(binding.contentEditText) {
-                val content = currentPost?.content
-                setText(content)
-                if (content != null) {
-                    requestFocus()
-                    showKeyboard()
-                } else {
-                    clearFocus()
-                    hideKeyboard()
-                }
+        viewModel.sharePostContent.observe(this) { postContent ->
+            val intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, postContent)
+                type = "text/plain"
             }
+
+            val shareIntent =
+                Intent.createChooser(intent, getString(R.string.chooser_share_post))
+            startActivity(shareIntent)
+        }
+
+        val postContentActivityLauncher = registerForActivityResult(
+            PostContentActivity.ResultContract
+        ) { postContent ->
+            postContent ?: return@registerForActivityResult
+            viewModel.onSaveButtonClicked(postContent)
+        }
+
+        viewModel.navigateToPostContentScreenEvent.observe(this) {
+            postContentActivityLauncher.launch(viewModel.currentPost.value?.content)
         }
     }
 }
