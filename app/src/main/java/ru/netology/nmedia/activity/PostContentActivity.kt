@@ -36,7 +36,6 @@ class PostContentActivity : AppCompatActivity() {
         }
 
         binding.cancelButton.setOnClickListener {
-            setResult(Activity.RESULT_CANCELED, intent)
             finish()
         }
     }
@@ -50,7 +49,9 @@ class PostContentActivity : AppCompatActivity() {
         override fun parseResult(resultCode: Int, intent: Intent?) =
             if (resultCode == Activity.RESULT_OK) {
                 intent?.getStringExtra(RESULT_KEY)
-            } else null
+            } else {
+                null
+            }
     }
 
     private companion object {

@@ -75,6 +75,32 @@
         app:layout_constraintTop_toBottomOf="@id/barrier"
         tools:text="@sample/posts.json/data/content" />
 
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/videoContent"
+        android:layout_width="match_parent"
+        android:layout_height="128dp"
+        android:padding="@dimen/common_spacing"
+        app:layout_constraintTop_toBottomOf="@+id/like"
+        app:srcCompat="@drawable/ic_post_avatar_48" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/videoPlayButton"
+        style="@style/Widget.AppTheme.videoPlayButtonButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/videoContent"
+        app:layout_constraintStart_toStartOf="@+id/videoContent"
+        app:layout_constraintEnd_toEndOf="@+id/videoContent"
+        app:layout_constraintTop_toTopOf="@+id/videoContent"
+        app:srcCompat="@drawable/ic_video_play_48dp" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/objectVideo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="videoContent,videoPlayButton" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/like"
         style="@style/Widget.AppTheme.likeButton"

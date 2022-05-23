@@ -1,6 +1,7 @@
 package ru.netology.nmedia
 
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -45,6 +46,11 @@ class MainActivity : AppCompatActivity() {
             startActivity(shareIntent)
         }
 
+        viewModel.playVideoUrl.observe(this) { videoUrl ->
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(videoUrl))
+            startActivity(intent)
+        }
+
         val postContentActivityLauncher = registerForActivityResult(
             PostContentActivity.ResultContract
         ) { postContent ->
@@ -52,7 +58,10 @@ class MainActivity : AppCompatActivity() {
             viewModel.onSaveButtonClicked(postContent)
         }
 
-        viewModel.navigateToPostContentScreenEvent.observe(this) {
+        viewModel.navigateToPostContentScreenEventCreate.observe(this) {
+            postContentActivityLauncher.launch("")
+        }
+        viewModel.navigateToPostContentScreenEventEdit.observe(this) {
             postContentActivityLauncher.launch(viewModel.currentPost.value?.content)
         }
     }
