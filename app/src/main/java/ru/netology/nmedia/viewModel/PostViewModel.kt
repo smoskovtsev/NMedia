@@ -22,8 +22,7 @@ class PostViewModel(
     val data get() = repository.data //or val data by repository :: data
 
     val sharePostContent = SingleLiveEvent<String>()
-    val navigateToPostContentScreenEventCreate = SingleLiveEvent<Unit>()
-    val navigateToPostContentScreenEventEdit = SingleLiveEvent<Unit>()
+    val navigateToPostContentScreenEvent = SingleLiveEvent<String>()
     val currentPost = MutableLiveData<Post?>(null)
     val playVideoUrl = SingleLiveEvent<String>()
 
@@ -43,7 +42,7 @@ class PostViewModel(
     }
 
     fun onAddClicked() {
-        navigateToPostContentScreenEventCreate.call()
+        navigateToPostContentScreenEvent.call()
     }
 
     // region PostInteractionListener
@@ -59,7 +58,7 @@ class PostViewModel(
 
     override fun onPostEdited(post: Post) {
         currentPost.value = post
-        navigateToPostContentScreenEventEdit.call()
+        navigateToPostContentScreenEvent.value = post.content
     }
 
     override fun onVideoPlayClicked(post: Post) {
