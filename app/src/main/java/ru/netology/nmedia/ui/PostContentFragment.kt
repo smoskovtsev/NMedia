@@ -22,23 +22,18 @@ class PostContentFragment : Fragment() {
 
     private val viewModel by viewModels<PostViewModel>()
 
-    private val initialContent by lazy {
-        val args by navArgs<PostContentFragmentArgs>()
-        args.initialContent
-    }
+    private val args by navArgs<PostContentFragmentArgs>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = PostContentFragmentBinding.inflate(layoutInflater, container, false).also { binding ->
-        binding.edit.setText(initialContent)
+        binding.edit.setText(args.initialContent)
         binding.edit.requestFocus()
-
         binding.ok.setOnClickListener {
             onOkButtonClicked(binding)
         }
-
         binding.cancelButton.setOnClickListener {
             findNavController().popBackStack()
         }

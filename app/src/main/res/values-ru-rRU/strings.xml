@@ -10,4 +10,6 @@
     <string name="chooser_share_post">Поделиться</string>
     <string name="description_post_save">Создать пост</string>
     <string name="add_post">Добавить пост</string>
+    <string name="video_fragment">Видеофрагмент</string>
+    <string name="video_play_button">Включить видео</string>
 </resources>

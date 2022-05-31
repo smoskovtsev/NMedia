@@ -3,32 +3,29 @@ package ru.netology.nmedia.viewModel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import ru.netology.nmedia.adapter.PostInteractionListener
 import ru.netology.nmedia.data.PostRepository
-import ru.netology.nmedia.data.impl.FilePostRepository
 import ru.netology.nmedia.data.impl.InMemoryPostRepository
-import ru.netology.nmedia.data.impl.SharedPrefsPostRepository
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.util.SingleLiveEvent
 
-class PostViewModel(
+class PostCardViewModel(
     application: Application
 ) : AndroidViewModel(application), PostInteractionListener {
 
     private val repository: PostRepository = InMemoryPostRepository
 
-    val data get() = repository.data //or val data by repository :: data
+    val data by repository::data
+
+    val currentPost = MutableLiveData<Post?>(null)
 
     val sharePostContent = SingleLiveEvent<String>()
     val navigateToPostContentScreenEvent = SingleLiveEvent<String>()
-    val navigateToPostCardScreenEvent = SingleLiveEvent<Long>()
-    val currentPost = MutableLiveData<Post?>(null)
     val playVideoUrl = SingleLiveEvent<String>()
+    val removePost = SingleLiveEvent<Unit>()
 
-    fun setCurrentPost(postId: Long) {
-        currentPost.value = repository.getById(postId)
-    }
+    fun getPostById(postId: Long) : Post? =
+        repository.getById(postId)
 
     fun onSaveButtonClicked(content: String) {
         if (content.isBlank()) return
@@ -45,15 +42,8 @@ class PostViewModel(
         currentPost.value = null
     }
 
-    fun onAddClicked() {
-        navigateToPostContentScreenEvent.call()
-    }
-
-    // region PostInteractionListener
-
     override fun onLikeClicked(post: Post) {
         repository.like(post.id)
-        setCurrentPost(post.id)
     }
 
     override fun onPostShared(post: Post) {
@@ -61,7 +51,9 @@ class PostViewModel(
         sharePostContent.value = post.content
     }
 
-    override fun onPostDeleted(post: Post) = repository.delete(post.id)
+    override fun onPostDeleted(post: Post) {
+        repository.delete(post.id)
+    }
 
     override fun onPostEdited(post: Post) {
         currentPost.value = post
@@ -73,9 +65,6 @@ class PostViewModel(
     }
 
     override fun onPostClicked(post: Post) {
-        currentPost.value = post
-        navigateToPostCardScreenEvent.value = post.id
     }
 
-    // endregion PostInteractionListener
 }

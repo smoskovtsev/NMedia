@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.PostBinding
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.ui.bind
+import ru.netology.nmedia.ui.listen
 
 internal class PostsAdapter(
     private val interactionListener: PostInteractionListener
@@ -23,67 +25,17 @@ internal class PostsAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), interactionListener)
     }
 
     class ViewHolder(private val binding: PostBinding, listener: PostInteractionListener) : RecyclerView.ViewHolder(binding.root) {
 
         private lateinit var post: Post
 
-        private val popupMenu by lazy {
-            PopupMenu(itemView.context, binding.menu).apply {
-               inflate(R.menu.options_post)
-               setOnMenuItemClickListener { menuItem ->
-                   when (menuItem.itemId) {
-                       R.id.remove -> {
-                           listener.onPostDeleted(post)
-                           true
-                       }
-                       R.id.edit -> {
-                           listener.onPostEdited(post)
-                           true
-                       }
-                       else -> false
-                   }
-               }
-            }
-        }
-
-        init {
-            binding.like.setOnClickListener { listener.onLikeClicked(post) }
-            binding.share.setOnClickListener { listener.onPostShared(post) }
-            binding.menu.setOnClickListener{ popupMenu.show() }
-            binding.videoPlayButton.setOnClickListener { listener.onVideoPlayClicked(post) }
-            binding.videoContent.setOnClickListener { listener.onVideoPlayClicked(post) }
-        }
-
-        fun bind(post: Post) {
+        fun bind(post: Post, listener: PostInteractionListener) {
             this.post = post
-
-            with(binding) {
-                author.text = post.author
-                content.text = post.content
-                published.text = post.published
-                like.text = likesSharesDisplay(post.likes)
-                like.isChecked = post.likedByMe
-                share.text = likesSharesDisplay(post.shares)
-                share.isChecked = post.shared
-                visibility.text = likesSharesDisplay(post.views)
-                objectVideo.visibility =
-                    if (post.videoUrl.isBlank()) View.GONE else View.VISIBLE
-            }
-        }
-
-        private fun likesSharesDisplay (amount: Int): String {
-            return when {
-                (amount < 1000) -> "$amount"
-                (amount < 10000) && (amount % 1000) < 100 -> "${amount/1000}K"
-                (amount < 10000) -> "${amount/1000}.${(amount % 1000)/100}K"
-                (amount < 1_000_000) -> "${amount/1000}K"
-                (amount == 1_000_000) -> "${amount/1_000_000}M"
-                (amount > 1_000_000) && (amount % 1_000_000) < 100_000 -> "${amount/1_000_000}M"
-                else -> "${amount/1_000_000}.${(amount % 1_000_000)/100_000}M"
-            }
+            binding.bind(post)
+            binding.listen(post, listener)
         }
     }
 

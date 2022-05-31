@@ -77,6 +77,7 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/videoContent"
+        android:contentDescription="@string/video_fragment"
         android:layout_width="match_parent"
         android:layout_height="128dp"
         android:padding="@dimen/common_spacing"
@@ -85,6 +86,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/videoPlayButton"
+        android:contentDescription="@string/video_play_button"
         style="@style/Widget.AppTheme.videoPlayButtonButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

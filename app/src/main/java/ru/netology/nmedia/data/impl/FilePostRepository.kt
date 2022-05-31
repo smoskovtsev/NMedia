@@ -94,6 +94,10 @@ class FilePostRepository(
         }
     }
 
+    override fun getById(postId: Long): Post? {
+        return posts.find { it.id == postId }
+    }
+
     private companion object {
         //const val GENERATED_POSTS_AMOUNT = 1000
         const val POSTS_PREFS_KEY = "posts"

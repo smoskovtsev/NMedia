@@ -34,22 +34,19 @@ class FeedFragment : Fragment() {
             startActivity(shareIntent)
         }
 
-        viewModel.playVideoUrl.observe(this) { videoUrl ->
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(videoUrl))
-            startActivity(intent)
-        }
-
-        setFragmentResultListener(
-            requestKey = PostContentFragment.REQUEST_KEY
-        ) { requestKey, bundle ->
-            if (requestKey != PostContentFragment.REQUEST_KEY) return@setFragmentResultListener
-            val newPostContent = bundle.getString(PostContentFragment.RESULT_KEY) ?: return@setFragmentResultListener
-            viewModel.onSaveButtonClicked(newPostContent)
-        }
-
         viewModel.navigateToPostContentScreenEvent.observe(this) { initialContent ->
             val direction = FeedFragmentDirections.toPostContentFragment(initialContent)
             findNavController().navigate(direction)
+        }
+
+        viewModel.navigateToPostCardScreenEvent.observe(this) {postId ->
+            val direction = FeedFragmentDirections.toPostCardFragment(postId)
+            findNavController().navigate(direction)
+        }
+
+        viewModel.playVideoUrl.observe(this) { videoUrl ->
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(videoUrl))
+            startActivity(intent)
         }
     }
 
@@ -67,6 +64,14 @@ class FeedFragment : Fragment() {
 
         binding.fab.setOnClickListener {
             viewModel.onAddClicked()
+        }
+
+        setFragmentResultListener(
+            requestKey = PostContentFragment.REQUEST_KEY
+        ) { requestKey, bundle ->
+            if (requestKey != PostContentFragment.REQUEST_KEY) return@setFragmentResultListener
+            val newPostContent = bundle.getString(PostContentFragment.RESULT_KEY) ?: return@setFragmentResultListener
+            viewModel.onSaveButtonClicked(newPostContent)
         }
     }.root
 

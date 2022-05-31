@@ -102,6 +102,10 @@ class SharedPrefsPostRepository(
         }
     }
 
+    override fun getById(postId: Long): Post? {
+        TODO("Not yet implemented")
+    }
+
     private companion object {
         //const val GENERATED_POSTS_AMOUNT = 1000
         const val POSTS_PREFS_KEY = "posts"
