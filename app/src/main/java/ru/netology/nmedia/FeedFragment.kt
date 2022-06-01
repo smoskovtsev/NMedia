@@ -5,14 +5,13 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
-import androidx.fragment.app.setFragmentResultListener
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.*
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.ui.PostContentFragment
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FeedFragmentBinding
+import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.ui.PostCardFragment
 import ru.netology.nmedia.viewModel.PostViewModel
 
 class FeedFragment : Fragment() {
@@ -39,16 +38,29 @@ class FeedFragment : Fragment() {
             startActivity(intent)
         }
 
-        setFragmentResultListener(
-            requestKey = PostContentFragment.REQUEST_KEY
+        setFragmentResultListener(PostContentFragment.REQUEST_KEY
         ) { requestKey, bundle ->
             if (requestKey != PostContentFragment.REQUEST_KEY) return@setFragmentResultListener
             val newPostContent = bundle.getString(PostContentFragment.RESULT_KEY) ?: return@setFragmentResultListener
             viewModel.onSaveButtonClicked(newPostContent)
         }
 
+        setFragmentResultListener(PostCardFragment.REQUEST_KEY_CARD
+        ) { requestKey, bundle ->
+            if (requestKey != PostCardFragment.REQUEST_KEY_CARD) return@setFragmentResultListener
+            val deletedPost = bundle.getParcelable<Post>(PostCardFragment.RESULT_KEY_CARD) ?: return@setFragmentResultListener
+//            clearFragmentResultListener(PostCardFragment.REQUEST_KEY_CARD)
+//            clearFragmentResultListener(PostCardFragment.RESULT_KEY_CARD)
+            viewModel.onPostDeleted(deletedPost)
+        }
+
         viewModel.navigateToPostContentScreenEvent.observe(this) { initialContent ->
             val direction = FeedFragmentDirections.toPostContentFragment(initialContent)
+            findNavController().navigate(direction)
+        }
+
+        viewModel.navigateToPostCardScreenEvent.observe(this) { initialPost ->
+            val direction = FeedFragmentDirections.toPostCardFragment(initialPost)
             findNavController().navigate(direction)
         }
     }

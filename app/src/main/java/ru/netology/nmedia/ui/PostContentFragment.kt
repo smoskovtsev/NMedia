@@ -11,10 +11,13 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.clearFragmentResult
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import ru.netology.nmedia.FeedFragmentDirections
+import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.PostContentFragmentBinding
 import ru.netology.nmedia.viewModel.PostViewModel
 
@@ -45,6 +48,7 @@ class PostContentFragment : Fragment() {
     }.root
 
     private fun onOkButtonClicked(binding: PostContentFragmentBinding) {
+        //clearFragmentResult(PostCardFragment.REQUEST_KEY_CARD)
         val text = binding.edit.text
         if (!text.isNullOrBlank()) {
             val resultBundle = Bundle(1)

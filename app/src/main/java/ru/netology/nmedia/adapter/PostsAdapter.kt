@@ -55,6 +55,7 @@ internal class PostsAdapter(
             binding.menu.setOnClickListener{ popupMenu.show() }
             binding.videoPlayButton.setOnClickListener { listener.onVideoPlayClicked(post) }
             binding.videoContent.setOnClickListener { listener.onVideoPlayClicked(post) }
+            binding.content.setOnClickListener { listener.onPostClicked(post) }
         }
 
         fun bind(post: Post) {
@@ -70,7 +71,7 @@ internal class PostsAdapter(
                 share.isChecked = post.shared
                 visibility.text = likesSharesDisplay(post.views)
                 objectVideo.visibility =
-                    if (post.videoUrl.isBlank()) View.GONE else View.VISIBLE
+                    if (post.videoUrl!!.isBlank()) View.GONE else View.VISIBLE
             }
         }
 
