@@ -62,7 +62,7 @@ class PostViewModel(
 
     fun onPostEditedFromCard(post: Post) {
         currentPost.value = post
-        navigateToPostContentScreenEventFromCard.value = post.content!!
+        navigateToPostContentScreenEvent.value = post.content!!
     }
 
     override fun onVideoPlayClicked(post: Post) {

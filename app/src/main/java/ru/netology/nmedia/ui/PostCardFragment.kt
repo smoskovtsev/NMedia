@@ -1,14 +1,12 @@
 package ru.netology.nmedia.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.clearFragmentResult
-import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.*
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import ru.netology.nmedia.FeedFragmentDirections
@@ -24,7 +22,9 @@ import ru.netology.nmedia.FeedFragment
 
 class PostCardFragment : Fragment() {
 
-    private val viewModel by viewModels<PostViewModel>()
+    private val viewModel: PostViewModel by viewModels(
+        ownerProducer = ::requireParentFragment
+    )
 
     private val initialPost by lazy {
         val args by navArgs<PostCardFragmentArgs>()
@@ -36,21 +36,23 @@ class PostCardFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = PostCardFragmentBinding.inflate(layoutInflater, container, false).also { binding ->
-
-        with(binding.postCard) {
-            author.text = initialPost?.author
-            content.text = initialPost?.content
-            published.text = initialPost?.published
-            like.isChecked = initialPost!!.likedByMe
-            like.text = initialPost?.let { likesSharesDisplay(it.likes) }
-            share.text = initialPost?.let { likesSharesDisplay(it.shares) }
-            share.isChecked = initialPost!!.shared
-            visibility.text = initialPost?.let { likesSharesDisplay(it.views) }
-            objectVideo.visibility =
-                if (initialPost!!.videoUrl!!.isBlank()) View.GONE else View.VISIBLE
+//
+        viewModel.data.observe(viewLifecycleOwner) {
+            with(binding.postCard) {
+                author.text = initialPost?.author
+                content.text = initialPost?.content
+                published.text = initialPost?.published
+                like.isChecked = initialPost!!.likedByMe
+                like.text = initialPost?.let { likesSharesDisplay(it.likes) }
+                share.text = initialPost?.let { likesSharesDisplay(it.shares) }
+                share.isChecked = initialPost!!.shared
+                visibility.text = initialPost?.let { likesSharesDisplay(it.views) }
+                objectVideo.visibility =
+                    if (initialPost!!.videoUrl!!.isBlank()) View.GONE else View.VISIBLE
+            }
         }
-
-        binding.postCard.menu.setOnClickListener{
+//
+        binding.postCard.menu.setOnClickListener {
             PopupMenu(it.context, it).apply {
                 inflate(R.menu.options_post)
                 setOnMenuItemClickListener { item ->
@@ -61,10 +63,10 @@ class PostCardFragment : Fragment() {
                         }
                         R.id.edit -> {
                             viewModel.onPostEditedFromCard(initialPost!!)
-                            viewModel.navigateToPostContentScreenEventFromCard.observe(viewLifecycleOwner) { initialContent ->
-                                val direction = FeedFragmentDirections.toPostContentFragment(initialContent)
+//                            viewModel.navigateToPostContentScreenEvent.observe(viewLifecycleOwner) { initialContent ->
+                                val direction = FeedFragmentDirections.toPostContentFragment(initialPost!!.content)
                                 findNavController().navigate(direction)
-                            }
+//                            }
                             true
                         }
                         else -> false
@@ -73,6 +75,7 @@ class PostCardFragment : Fragment() {
             }.show()
         }
     }.root
+
 
     private fun onMenuRemoveClicked(binding: PostCardFragmentBinding) {
         if (initialPost != null) {
