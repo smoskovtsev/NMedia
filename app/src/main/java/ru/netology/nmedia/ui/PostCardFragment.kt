@@ -1,6 +1,7 @@
 package ru.netology.nmedia.ui
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -37,69 +38,36 @@ class PostCardFragment : Fragment() {
         savedInstanceState: Bundle?
     ) = PostCardFragmentBinding.inflate(layoutInflater, container, false).also { binding ->
 //
-        viewModel.data.observe(viewLifecycleOwner) {
-            with(binding.postCard) {
-                author.text = initialPost?.author
-                content.text = initialPost?.content
-                published.text = initialPost?.published
-                like.isChecked = initialPost!!.likedByMe
-                like.text = initialPost?.let { likesSharesDisplay(it.likes) }
-                share.text = initialPost?.let { likesSharesDisplay(it.shares) }
-                share.isChecked = initialPost!!.shared
-                visibility.text = initialPost?.let { likesSharesDisplay(it.views) }
-                objectVideo.visibility =
-                    if (initialPost!!.videoUrl!!.isBlank()) View.GONE else View.VISIBLE
+        val viewHolder = PostsAdapter.ViewHolder(binding.postCard, viewModel)
+        viewModel.data.observe(viewLifecycleOwner) { posts ->
+            val post = posts.find { it.id == initialPost?.id } ?: run {
+                findNavController().navigateUp() // the post was deleted, close the fragment
+                return@observe
             }
+            viewHolder.bind(post)
         }
-//
-        binding.postCard.menu.setOnClickListener {
-            PopupMenu(it.context, it).apply {
-                inflate(R.menu.options_post)
-                setOnMenuItemClickListener { item ->
-                    when (item.itemId) {
-                        R.id.remove -> {
-                            onMenuRemoveClicked(binding)
-                            true
-                        }
-                        R.id.edit -> {
-                            viewModel.onPostEditedFromCard(initialPost!!)
-//                            viewModel.navigateToPostContentScreenEvent.observe(viewLifecycleOwner) { initialContent ->
-                                val direction = FeedFragmentDirections.toPostContentFragment(initialPost!!.content)
-                                findNavController().navigate(direction)
-//                            }
-                            true
-                        }
-                        else -> false
-                    }
-                }
-            }.show()
+
+        viewModel.sharePostContent.observe(viewLifecycleOwner) { postContent ->
+            val intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, postContent)
+                type = "text/plain"
+            }
+
+            val shareIntent =
+                Intent.createChooser(intent, getString(R.string.chooser_share_post))
+            startActivity(shareIntent)
         }
+
+        viewModel.playVideoUrl.observe(viewLifecycleOwner) { videoUrl ->
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(videoUrl))
+            startActivity(intent)
+        }
+
+        viewModel.navigateToPostContentScreenEvent.observe(viewLifecycleOwner) { initialContent ->
+            val direction = FeedFragmentDirections.toPostContentFragment(initialContent)
+            findNavController().navigate(direction)
+        }
+
     }.root
-
-
-    private fun onMenuRemoveClicked(binding: PostCardFragmentBinding) {
-        if (initialPost != null) {
-            val resultBundle = Bundle(1)
-            resultBundle.putParcelable(RESULT_KEY_CARD, initialPost)
-            setFragmentResult(REQUEST_KEY_CARD, resultBundle)
-        }
-        findNavController().popBackStack()
-    }
-
-    companion object {
-        const val REQUEST_KEY_CARD = "requestKeyCard"
-        const val RESULT_KEY_CARD = "deletedPost"
-    }
-
-    private fun likesSharesDisplay (amount: Int): String {
-        return when {
-            (amount < 1000) -> "$amount"
-            (amount < 10000) && (amount % 1000) < 100 -> "${amount/1000}K"
-            (amount < 10000) -> "${amount/1000}.${(amount % 1000)/100}K"
-            (amount < 1_000_000) -> "${amount/1000}K"
-            (amount == 1_000_000) -> "${amount/1_000_000}M"
-            (amount > 1_000_000) && (amount % 1_000_000) < 100_000 -> "${amount/1_000_000}M"
-            else -> "${amount/1_000_000}.${(amount % 1_000_000)/100_000}M"
-        }
-    }
 }

@@ -16,7 +16,9 @@ import ru.netology.nmedia.viewModel.PostViewModel
 
 class FeedFragment : Fragment() {
 
-    private val viewModel by viewModels<PostViewModel>()
+    private val viewModel: PostViewModel by viewModels(
+        ownerProducer = ::requireParentFragment
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,15 +45,6 @@ class FeedFragment : Fragment() {
             if (requestKey != PostContentFragment.REQUEST_KEY) return@setFragmentResultListener
             val newPostContent = bundle.getString(PostContentFragment.RESULT_KEY) ?: return@setFragmentResultListener
             viewModel.onSaveButtonClicked(newPostContent)
-        }
-
-        setFragmentResultListener(PostCardFragment.REQUEST_KEY_CARD
-        ) { requestKey, bundle ->
-            if (requestKey != PostCardFragment.REQUEST_KEY_CARD) return@setFragmentResultListener
-            val deletedPost = bundle.getParcelable<Post>(PostCardFragment.RESULT_KEY_CARD) ?: return@setFragmentResultListener
-//            clearFragmentResultListener(PostCardFragment.REQUEST_KEY_CARD)
-//            clearFragmentResultListener(PostCardFragment.RESULT_KEY_CARD)
-            viewModel.onPostDeleted(deletedPost)
         }
 
         viewModel.navigateToPostContentScreenEvent.observe(this) { initialContent ->
