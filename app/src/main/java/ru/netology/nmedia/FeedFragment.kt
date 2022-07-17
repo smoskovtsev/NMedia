@@ -40,13 +40,6 @@ class FeedFragment : Fragment() {
             startActivity(intent)
         }
 
-        setFragmentResultListener(PostContentFragment.REQUEST_KEY
-        ) { requestKey, bundle ->
-            if (requestKey != PostContentFragment.REQUEST_KEY) return@setFragmentResultListener
-            val newPostContent = bundle.getString(PostContentFragment.RESULT_KEY) ?: return@setFragmentResultListener
-            viewModel.onSaveButtonClicked(newPostContent)
-        }
-
         viewModel.navigateToPostContentScreenEvent.observe(this) { initialContent ->
             val direction = FeedFragmentDirections.toPostContentFragment(initialContent)
             findNavController().navigate(direction)
@@ -74,6 +67,17 @@ class FeedFragment : Fragment() {
             viewModel.onAddClicked()
         }
     }.root
+
+    override fun onResume () {
+        super.onResume()
+
+        setFragmentResultListener(PostContentFragment.REQUEST_KEY
+        ) { requestKey, bundle ->
+            if (requestKey != PostContentFragment.REQUEST_KEY) return@setFragmentResultListener
+            val newPostContent = bundle.getString(PostContentFragment.RESULT_KEY) ?: return@setFragmentResultListener
+            viewModel.onSaveButtonClicked(newPostContent)
+        }
+    }
 
     companion object {
         const val TAG = "feedFragment"

@@ -21,7 +21,6 @@ class PostViewModel(
     val sharePostContent = SingleLiveEvent<String>()
     val navigateToPostContentScreenEvent = SingleLiveEvent<String>()
     val navigateToPostCardScreenEvent = SingleLiveEvent<Post>()
-    val navigateToPostContentScreenEventFromCard = SingleLiveEvent<String>()
     val currentPost = MutableLiveData<Post?>(null)
     val playVideoUrl = SingleLiveEvent<String>()
 
@@ -56,11 +55,6 @@ class PostViewModel(
     override fun onPostDeleted(post: Post) = repository.delete(post.id)
 
     override fun onPostEdited(post: Post) {
-        currentPost.value = post
-        navigateToPostContentScreenEvent.value = post.content!!
-    }
-
-    fun onPostEditedFromCard(post: Post) {
         currentPost.value = post
         navigateToPostContentScreenEvent.value = post.content!!
     }

@@ -70,4 +70,15 @@ class PostCardFragment : Fragment() {
         }
 
     }.root
+
+    override fun onResume () {
+        super.onResume()
+
+        setFragmentResultListener(PostContentFragment.REQUEST_KEY
+        ) { requestKey, bundle ->
+            if (requestKey != PostContentFragment.REQUEST_KEY) return@setFragmentResultListener
+            val newPostContent = bundle.getString(PostContentFragment.RESULT_KEY) ?: return@setFragmentResultListener
+            viewModel.onSaveButtonClicked(newPostContent)
+        }
+    }
 }
